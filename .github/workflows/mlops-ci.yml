@@ -73,3 +73,7 @@ jobs:
       - name: Verify AWS identity
         run: |
           aws sts get-caller-identity
+
+      - name: Upload model to S3
+        run: |
+          aws s3 cp model/model.tar.gz s3://sagemaker-mlops-project-artifacts/models/churn/${{ github.sha }}/model.tar.gz

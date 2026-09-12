@@ -34,6 +34,11 @@ jobs:
         run: |
           python src/train.py
 
+      - name: Verify trained model
+        run: |
+          ls -lh model/
+          test -f model/model.joblib
+
       - name: Evaluate model
         run: |
           python src/evaluate.py
@@ -44,4 +49,5 @@ jobs:
 
       - name: Verify model package
         run: |
+          ls -lh model/
           tar -tzf model/model.tar.gz

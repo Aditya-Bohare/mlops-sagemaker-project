@@ -8,7 +8,7 @@ __pycache__/
 # Trained model artifacts
 model/*.joblib
 model/*.tar.gz
-
+model/
 # Environment variables
 .env
 

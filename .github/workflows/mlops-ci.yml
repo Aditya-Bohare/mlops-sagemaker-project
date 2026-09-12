@@ -46,14 +46,24 @@ jobs:
       - name: Evaluate model
         run: |
           python src/evaluate.py
-
-      - name: Package model
+      
+      - name: Test SageMaker inference
         run: |
-          tar -czf model/model.tar.gz -C model model.joblib
+          python tests/test_sagemaker_inference.py
 
-      - name: Verify model package
+      - name: Prepare SageMaker inference code
+        run: |
+          mkdir -p model/code
+          cp src/sagemaker_inference.py model/code/inference.py
+
+      - name: Package SageMaker model
+        run: |
+          tar -czf model/model.tar.gz -C model model.joblib code
+
+      - name: Verify SageMaker model package
         run: |
           ls -lh model/
+          echo "Contents of model.tar.gz:"
           tar -tzf model/model.tar.gz
       
       - name: Upload MLOps artifacts
@@ -65,15 +75,18 @@ jobs:
             artifacts/metrics.json
 
       - name: Configure AWS credentials
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: arn:aws:iam::923357842396:role/GitHubActionsRole
           aws-region: ap-south-1
 
       - name: Verify AWS identity
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
           aws sts get-caller-identity
 
       - name: Upload model to S3
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
           aws s3 cp model/model.tar.gz s3://sagemaker-mlops-project-artifacts/models/churn/${{ github.sha }}/model.tar.gz

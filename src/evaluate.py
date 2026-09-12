@@ -1,4 +1,6 @@
 import joblib
+import os
+import json
 
 from sklearn.metrics import (
     accuracy_score,
@@ -88,6 +90,36 @@ print(matrix)
 
 print("\nQuality Gate")
 print("------------------------")
+
+os.makedirs(
+    "artifacts",
+    exist_ok=True
+)
+
+metrics = {
+    "accuracy": round(accuracy, 4),
+    "precision": round(precision, 4),
+    "recall": round(recall, 4),
+    "f1_score": round(f1, 4),
+    "quality_gate": (
+        "PASS"
+        if f1 >= MIN_F1_SCORE
+        else "FAIL"
+    )
+}
+
+with open(
+    "artifacts/metrics.json",
+    "w"
+) as file:
+    json.dump(
+        metrics,
+        file,
+        indent=4
+    )
+
+print("\nEvaluation metrics saved:")
+print("artifacts/metrics.json")
 
 if f1 >= MIN_F1_SCORE:
 

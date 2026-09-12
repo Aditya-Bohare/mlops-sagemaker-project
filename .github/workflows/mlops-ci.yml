@@ -51,3 +51,9 @@ jobs:
         run: |
           ls -lh model/
           tar -tzf model/model.tar.gz
+      
+      - name: Upload model artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: churn-model
+          path: model/model.tar.gz

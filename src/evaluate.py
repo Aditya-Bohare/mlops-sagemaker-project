@@ -19,8 +19,8 @@ from preprocess import (
 # CONFIGURATION
 # --------------------------------------------------
 
-DATA_PATH = "../data/raw/Telco-Customer-Churn.csv"
-MODEL_PATH = "../model/model.joblib"
+DATA_PATH = "data/raw/Telco-Customer-Churn.csv"
+MODEL_PATH = "model/model.joblib"
 
 MIN_F1_SCORE = 0.50
 

@@ -93,7 +93,7 @@ print("Training completed.")
 # --------------------------------------------------
 
 os.makedirs(
-    "../model",
+    "model",
     exist_ok=True
 )
 
@@ -104,7 +104,7 @@ os.makedirs(
 
 joblib.dump(
     pipeline,
-    "../model/model.joblib"
+    "model/model.joblib"
 )
 
 print("\nModel saved:")

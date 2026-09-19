@@ -46,7 +46,7 @@ jobs:
       - name: Evaluate model
         run: |
           python src/evaluate.py
-      
+
       - name: Test SageMaker inference
         run: |
           python tests/test_sagemaker_inference.py
@@ -65,7 +65,7 @@ jobs:
           ls -lh model/
           echo "Contents of model.tar.gz:"
           tar -tzf model/model.tar.gz
-      
+
       - name: Upload MLOps artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -90,3 +90,15 @@ jobs:
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
           aws s3 cp model/model.tar.gz s3://sagemaker-mlops-project-artifacts/models/churn/${{ github.sha }}/model.tar.gz
+
+      - name: Install deployment dependencies
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          pip install -r requirements-deploy.txt
+
+      - name: Deploy, test and cleanup SageMaker
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          SAGEMAKER_EXECUTION_ROLE_ARN: ${{ vars.SAGEMAKER_EXECUTION_ROLE_ARN }}
+        run: |
+          python scripts/deploy_sagemaker.py

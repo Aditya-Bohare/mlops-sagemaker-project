@@ -1,8 +1,10 @@
 import os
 import time
-import boto3
-from sagemaker.core import image_uris
 import json
+
+import boto3
+from botocore.exceptions import ClientError
+from sagemaker.core import image_uris
 
 REGION = "ap-south-1"
 
@@ -51,7 +53,8 @@ image_uri = image_uris.retrieve(
     region=REGION,
     version="1.4-2",
     py_version="py3",
-    instance_type="ml.m5.large"
+    instance_type="ml.m5.large",
+    image_scope="inference"
 )
 
 print(f"Inference image : {image_uri}")
@@ -133,6 +136,10 @@ try:
     print("Endpoint creation started.")
     print("Waiting for endpoint to become InService...")
 
+    start_time = time.time()
+    max_wait_seconds = 15 * 60
+
+
 
     # -------------------------------------------------
     # 4. WAIT FOR ENDPOINT
@@ -147,6 +154,14 @@ try:
         status = response["EndpointStatus"]
 
         print(f"Endpoint status: {status}")
+
+        elapsed_time = time.time() - start_time
+
+        if elapsed_time > max_wait_seconds:
+            raise TimeoutError(
+                "Endpoint did not become InService "
+                "within 15 minutes."
+            )
 
         if status == "InService":
             break
@@ -259,7 +274,7 @@ finally:
 
                 time.sleep(15)
 
-            except sagemaker.exceptions.ClientError as error:
+            except ClientError as error:
 
                 if (
                     error.response["Error"]["Code"]

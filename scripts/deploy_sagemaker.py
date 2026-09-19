@@ -1,7 +1,7 @@
 import os
 import time
 import boto3
-from sagemaker import image_uris
+from sagemaker.core import image_uris
 import json
 
 REGION = "ap-south-1"
